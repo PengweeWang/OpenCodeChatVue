@@ -145,9 +145,10 @@ defineExpose({ textareaRef, clear })
   white-space: nowrap;
 }
 .chat-input-area {
-  padding: 8px 14px 10px;
-  border-top: 1px solid #f0f0f0;
+  padding: 10px 16px 12px;
+  border-top: 1px solid #eef0f2;
   background: #fff;
+  flex-shrink: 0;
 }
 .input-row {
   display: flex;
@@ -160,29 +161,29 @@ defineExpose({ textareaRef, clear })
 }
 .chat-textarea {
   flex: 1;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 9px 36px 9px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 10px 38px 10px 16px;
   font-size: 13px;
   font-family: inherit;
   outline: none;
-  min-height: 38px;
-  line-height: 1.45;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  background: #fafbfc;
+  min-height: 40px;
+  line-height: 1.5;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  background: #f9fafb;
   white-space: pre-wrap;
   overflow: hidden;
   word-break: break-word;
 }
 .chat-textarea:focus {
-  border-color: #1890ff;
-  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.08);
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
   background: #fff;
 }
 .chat-textarea.disabled {
-  background: #f5f5f5;
-  color: #999;
-  border-color: #e8e8e8;
+  background: #f3f4f6;
+  color: #9ca3af;
+  border-color: #e5e7eb;
   pointer-events: none;
 }
 .chat-textarea:empty:before {
@@ -192,9 +193,9 @@ defineExpose({ textareaRef, clear })
 }
 .placeholder-text {
   position: absolute;
-  top: 9px;
-  left: 14px;
-  right: 36px;
+  top: 10px;
+  left: 16px;
+  right: 38px;
   font-size: 13px;
   color: #bbb;
   pointer-events: none;
@@ -210,53 +211,68 @@ defineExpose({ textareaRef, clear })
   align-items: center;
 }
 .send-btn, .stop-btn {
-  width: 28px; height: 28px;
-  border-radius: 8px;
+  width: 30px; height: 30px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .send-btn {
-  background: #1890ff;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
   color: #fff;
+  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.3);
 }
 .send-btn:hover:not(:disabled) {
-  background: #40a9ff;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4);
+  transform: translateY(-1px);
 }
 .send-btn:active:not(:disabled) {
-  transform: scale(0.95);
+  transform: translateY(0) scale(0.95);
 }
-.send-btn:disabled { background: #d9d9d9; color: #fff; cursor: not-allowed; }
+.send-btn:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 .stop-btn {
-  background: #ff4d4f;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: #fff;
+  box-shadow: 0 1px 4px rgba(239, 68, 68, 0.3);
+  animation: stopPulse 2s infinite;
+}
+@keyframes stopPulse {
+  0%, 100% { box-shadow: 0 1px 4px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 1px 8px rgba(239, 68, 68, 0.5); }
 }
 .stop-btn:hover {
-  background: #ff7875;
+  background: linear-gradient(135deg, #f87171, #ef4444);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
 }
 
 .chat-selector-bar {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding-top: 6px;
+  padding-top: 8px;
   min-height: 28px;
 }
 .selector-trigger {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 2px 6px;
-  border-radius: 4px;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
   cursor: pointer;
   outline: none;
   max-width: 160px;
-  transition: background 0.15s;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 .selector-trigger.model-selector {
   max-width: 240px;
@@ -265,61 +281,79 @@ defineExpose({ textareaRef, clear })
   max-width: 120px;
 }
 .selector-trigger:hover {
-  background: rgba(0,0,0,0.04);
+  background: rgba(79, 70, 229, 0.04);
+}
+.selector-trigger:focus-visible {
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
 }
 .selector-label {
-  color: #666;
+  color: #6b7280;
   font-size: 12px;
   font-weight: 500;
   line-height: 1.3;
 }
 .selector-chevron {
   flex-shrink: 0;
-  color: #999;
-  transition: transform 0.2s;
+  color: #9ca3af;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .selector-chevron.open {
   transform: rotate(180deg);
+  color: #4f46e5;
+}
+.selector-trigger.thinking-selector .selector-label {
+  color: #7c3aed;
+}
+.selector-trigger.thinking-selector svg:first-child {
+  color: #a5b4fc;
 }
 .selector-dropdown {
   position: absolute;
-  bottom: calc(100% + 4px);
+  bottom: calc(100% + 6px);
   left: 0;
-  min-width: 180px;
-  max-height: 200px;
+  min-width: 190px;
+  max-height: 220px;
   overflow-y: auto;
   background: #fff;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
   z-index: 100;
-  padding: 4px;
+  padding: 6px;
+  animation: dropdownIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .selector-group-header {
-  padding: 6px 10px 3px;
+  padding: 8px 10px 4px;
   font-size: 10px;
   font-weight: 600;
-  color: #999;
+  color: #9ca3af;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
 }
 .selector-group-header:not(:first-child) {
   margin-top: 4px;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 10px;
 }
 .selector-option {
-  padding: 6px 10px;
-  border-radius: 5px;
+  padding: 7px 10px;
+  border-radius: 6px;
   font-size: 12px;
-  color: #444;
+  color: #4b5563;
   cursor: pointer;
-  transition: background 0.1s;
+  transition: background 0.12s, color 0.12s;
 }
 .selector-option:hover {
-  background: #f0f5ff;
+  background: #f0f0ff;
+  color: #4f46e5;
 }
 .selector-option.selected {
   font-weight: 600;
+  color: #4f46e5;
+  background: rgba(79, 70, 229, 0.06);
 }
 </style>

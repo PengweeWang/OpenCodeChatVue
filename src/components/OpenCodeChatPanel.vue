@@ -314,13 +314,34 @@ defineExpose({
 
 <style scoped>
 .ai-chat-panel {
+  --panel-bg: #ffffff;
+  --panel-border: rgba(0, 0, 0, 0.06);
+  --header-bg-from: #fafbfc;
+  --header-bg-to: #f7f8fa;
+  --header-border: #eef0f2;
+  --header-title-from: #1e1b4b;
+  --header-title-to: #312e81;
+  --icon-btn-bg: #f1f3f5;
+  --icon-btn-hover-bg: #e5e8eb;
+  --icon-btn-color: #555;
+  --icon-active-from: #4f46e5;
+  --icon-active-to: #6366f1;
+  --icon-active-shadow: rgba(79, 70, 229, 0.35);
+  --badge-bg: #ef4444;
+  --badge-color: #fff;
+  --msg-bg: #f9fafb;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+  --scrollbar-track: transparent;
+  --panel-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 12px rgba(0, 0, 0, 0.04);
+
   position: relative;
   height: 100%;
-  background: #fff;
+  background: var(--panel-bg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border: none;
+  box-shadow: var(--panel-shadow);
 }
 .resize-handle {
   position: absolute;
@@ -328,20 +349,28 @@ defineExpose({
   width: 8px;
   cursor: col-resize;
   z-index: 20;
+  background: transparent;
+  transition: background 0.2s;
+}
+.resize-handle:hover,
+.resize-handle:active {
+  background: rgba(79, 70, 229, 0.12);
 }
 
 .chat-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
-  border-bottom: 1px solid #f0f0f0;
-  background: linear-gradient(135deg, #fafbfc 0%, #f6f8fa 100%);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--header-border);
+  background: linear-gradient(180deg, var(--header-bg-from) 0%, var(--header-bg-to) 100%);
+  flex-shrink: 0;
 }
 .chat-header h3 {
+  margin: 0;
   font-size: 14px;
   font-weight: 700;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background: linear-gradient(135deg, var(--header-title-from), var(--header-title-to));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -350,7 +379,7 @@ defineExpose({
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 .add-point-wrapper {
   position: relative;
@@ -358,34 +387,39 @@ defineExpose({
 }
 .icon-btn {
   width: 32px; height: 32px;
-  border-radius: 50%;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #f0f0f0;
-  color: #555;
-  transition: all 0.2s ease;
+  background: var(--icon-btn-bg);
+  color: var(--icon-btn-color);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
 }
 .icon-btn:hover {
-  background: #e4e4e4;
-  transform: scale(1.05);
+  background: var(--icon-btn-hover-bg);
+  color: #333;
+  transform: translateY(-1px);
 }
 .icon-btn:active {
-  transform: scale(0.95);
+  transform: translateY(0) scale(0.96);
 }
 .icon-btn.active {
-  background: linear-gradient(135deg, #1890ff, #096dd9) !important;
+  background: linear-gradient(135deg, var(--icon-active-from), var(--icon-active-to)) !important;
   color: #fff !important;
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.4);
+  box-shadow: 0 2px 8px var(--icon-active-shadow), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.icon-btn:focus-visible {
+  outline: 2px solid var(--icon-active-from);
+  outline-offset: 2px;
 }
 .new-session-btn {
-  background: #f0f0f0 !important;
+  background: var(--icon-btn-bg) !important;
 }
 .new-session-btn:hover {
-  background: #e4e4e4 !important;
+  background: var(--icon-btn-hover-bg) !important;
 }
 .point-badge {
   position: absolute;
@@ -393,24 +427,40 @@ defineExpose({
   min-width: 16px; height: 16px;
   padding: 0 4px;
   border-radius: 8px;
-  background: #f5222d;
-  color: #fff;
+  background: var(--badge-bg);
+  color: var(--badge-color);
   font-size: 10px;
   font-weight: 600;
   line-height: 16px;
   text-align: center;
   pointer-events: none;
+  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.35);
 }
 
 .chat-messages {
   flex: 1;
-  overflow: auto;
-  padding: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   min-height: 0;
-  background: #fafbfc;
+  background: var(--msg-bg);
+  scroll-behavior: smooth;
+}
+.chat-messages::-webkit-scrollbar {
+  width: 5px;
+}
+.chat-messages::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+.chat-messages::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
 }
 .chat-messages > * {
   flex-shrink: 0;
