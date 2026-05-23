@@ -125,4 +125,4 @@ SSE 事件类型：`session.status`、`message.updated`、`message.part.delta`�
 
 ## License
 
-MIT
+[MIT](./LICENSE)
