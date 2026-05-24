@@ -149,6 +149,7 @@ defineExpose({ textareaRef, clear })
   border-top: 1px solid #eef0f2;
   background: #fff;
   flex-shrink: 0;
+  user-select: none;
 }
 .input-row {
   display: flex;
@@ -163,6 +164,7 @@ defineExpose({ textareaRef, clear })
   flex: 1;
   border: 1.5px solid #e5e7eb;
   border-radius: 14px;
+  user-select: text;
   padding: 10px 38px 10px 16px;
   font-size: 13px;
   font-family: inherit;

@@ -342,6 +342,7 @@ defineExpose({
   overflow: hidden;
   border: none;
   box-shadow: var(--panel-shadow);
+  user-select: none;
 }
 .resize-handle {
   position: absolute;

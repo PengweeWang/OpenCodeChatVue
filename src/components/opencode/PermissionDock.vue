@@ -37,6 +37,7 @@ defineEmits(['respond'])
   border-top: 1px solid #fecaca;
   background: linear-gradient(180deg, #fff7ed 0%, #fff1f2 100%);
   flex-shrink: 0;
+  user-select: none;
 }
 .permission-dock-body {
   margin-bottom: 10px;

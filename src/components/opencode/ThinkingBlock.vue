@@ -49,6 +49,7 @@ defineProps({
   background: #f9fafb;
   transition: background 0.15s, color 0.15s;
   outline: none;
+  user-select: none;
 }
 .thinking-block summary::-webkit-details-marker { display: none; }
 .thinking-block summary:focus-visible {
@@ -83,9 +84,10 @@ defineProps({
   padding: 0 14px 14px;
   font-size: 12px;
   color: #6b7280;
-  line-height: 1.65;
+  line-height: 1.45;
+  user-select: text;
 }
-.thinking-content :deep(p) { font-size: 12px; margin: 8px 0 0; }
+.thinking-content :deep(p) { font-size: 12px; margin: 6px 0 0; }
 
 .md-content :deep(h1) { font-size: 17px; margin: 14px 0 8px; font-weight: 700; color: #1e1b4b; }
 .md-content :deep(h2) { font-size: 15px; margin: 12px 0 6px; font-weight: 700; color: #1e1b4b; }
@@ -119,7 +121,7 @@ defineProps({
   padding-left: 18px;
   margin: 4px 0;
 }
-.md-content :deep(li) { margin: 3px 0; }
+.md-content :deep(li) { margin: 0; }
 .md-content :deep(li::marker) { color: #a5b4fc; }
 .md-content :deep(a) { color: #4f46e5; text-decoration: none; }
 .md-content :deep(strong) { font-weight: 600; color: #1e1b4b; }

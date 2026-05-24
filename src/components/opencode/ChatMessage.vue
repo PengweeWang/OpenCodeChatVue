@@ -51,6 +51,7 @@ defineProps({
 .msg-row {
   display: flex;
   animation: msgFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
 }
 @keyframes msgFadeIn {
   from { opacity: 0; transform: translateY(6px) scale(0.98); }
@@ -123,8 +124,9 @@ defineProps({
 .md-content {
   font-size: 13px;
   line-height: 1.65;
+  user-select: text;
 }
-.md-content :deep(p) { margin: 0 0 8px; }
+.md-content :deep(p) { margin: 0 0 6px; }
 .md-content :deep(p:last-child) { margin-bottom: 0; }
 .md-content :deep(h1) { font-size: 18px; margin: 16px 0 8px; font-weight: 700; color: #1e1b4b; }
 .md-content :deep(h2) { font-size: 16px; margin: 14px 0 6px; font-weight: 700; color: #1e1b4b; }
@@ -159,7 +161,7 @@ defineProps({
   padding-left: 20px;
   margin: 4px 0;
 }
-.md-content :deep(li) { margin: 4px 0; }
+.md-content :deep(li) { margin: 0; }
 .md-content :deep(li::marker) { color: #a5b4fc; }
 .md-content :deep(a) { color: #4f46e5; text-decoration: none; font-weight: 500; }
 .md-content :deep(a:hover) { text-decoration: underline; }

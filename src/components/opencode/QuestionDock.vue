@@ -92,6 +92,7 @@ defineEmits([
   border-top: 1px solid #fde68a;
   background: linear-gradient(180deg, #fffbeb 0%, #fefce8 100%);
   flex-shrink: 0;
+  user-select: none;
 }
 .question-dock-header {
   display: flex;
@@ -194,6 +195,7 @@ defineEmits([
 .question-textarea {
   width: 100%;
   border: 1.5px solid #e5e7eb;
+  user-select: text;
   border-radius: 10px;
   padding: 10px 12px;
   font-size: 12px;

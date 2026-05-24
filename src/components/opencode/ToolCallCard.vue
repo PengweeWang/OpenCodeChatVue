@@ -108,6 +108,7 @@ const resolvedAgent = computed(() => {
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: box-shadow 0.2s;
+  user-select: none;
 }
 .tool-call-card.completed { border-left: 3px solid #22c55e; }
 .tool-call-card.failed { border-left: 3px solid #ef4444; }
@@ -229,6 +230,7 @@ const resolvedAgent = computed(() => {
 .tool-code {
   font-size: 10px;
   font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
+  user-select: text;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;

@@ -40,6 +40,7 @@ defineProps({
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: box-shadow 0.2s;
+  user-select: none;
 }
 .thinking-block:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
