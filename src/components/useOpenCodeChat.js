@@ -13,6 +13,7 @@ export function useOpenCodeChat(serverUrl = 'http://127.0.0.1:4096', options = {
   const serverConnected = ref(false)
   const pendingQuestion = ref(null)
   const pendingPermission = ref(null)
+  const todos = ref([])
 
   let eventSource = null
   let eventReconnectTimer = null
@@ -184,6 +185,11 @@ function countLabel(toolCount, skillCount) {
         if (pendingPermission.value && (props.requestID === pendingPermission.value.id || props.requestID === pendingPermission.value.requestID)) {
           pendingPermission.value = null
         }
+        break
+      }
+      case 'todo.updated': {
+        if (props.todos) todos.value = props.todos
+        else if (Array.isArray(props.items)) todos.value = props.items
         break
       }
     }
@@ -642,6 +648,16 @@ function countLabel(toolCount, skillCount) {
     }
   }
 
+  async function fetchTodos() {
+    if (!currentSessionId.value) return
+    try {
+      const r = await fetch(`${serverUrl}/session/${currentSessionId.value}/todo`)
+      if (!r.ok) return
+      const data = await r.json()
+      todos.value = Array.isArray(data) ? data : (data?.items || data?.todos || [])
+    } catch {}
+  }
+
   async function init() {
     connectEventSource()
     try {
@@ -677,6 +693,7 @@ function countLabel(toolCount, skillCount) {
     pendingQuestion,
     pendingPermission,
     currentSessionId,
+    todos,
     handleSend,
     handleAbort,
     handleNewSession,
@@ -686,6 +703,7 @@ function countLabel(toolCount, skillCount) {
     fetchSessionList,
     switchSession,
     deleteSession,
+    fetchTodos,
     init,
     cleanup,
   }

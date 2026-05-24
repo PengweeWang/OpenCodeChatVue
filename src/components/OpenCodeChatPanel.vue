@@ -32,6 +32,8 @@
       </template>
     </div>
 
+    <TodoList v-if="todos.length > 0" :todos="todos" />
+
     <PermissionDock
       v-if="pendingPermission"
       :permission="pendingPermission"
@@ -106,6 +108,7 @@ import PermissionDock from './opencode/PermissionDock.vue'
 import QuestionDock from './opencode/QuestionDock.vue'
 import ChatInput from './opencode/ChatInput.vue'
 import SessionList from './opencode/SessionList.vue'
+import TodoList from './opencode/TodoList.vue'
 
 const props = defineProps({
   title: { type: String, default: 'AI Chat' },
@@ -135,6 +138,7 @@ const {
   pendingQuestion,
   pendingPermission,
   currentSessionId,
+  todos,
   handleSend: apiSend,
   handleAbort: apiAbort,
   handleNewSession: apiNewSession,
@@ -144,6 +148,7 @@ const {
   fetchSessionList,
   switchSession: apiSwitchSession,
   deleteSession: apiDeleteSession,
+  fetchTodos,
   init,
   cleanup,
 } = useOpenCodeChat(props.serverUrl, { defaultAgent: props.defaultAgent, defaultModel: props.defaultModel })
@@ -282,7 +287,10 @@ async function toggleSessionList() {
 
 async function handleSwitchSession(sessionId) {
   const ok = await apiSwitchSession(sessionId)
-  if (ok) showSessionList.value = false
+  if (ok) {
+    showSessionList.value = false
+    await fetchTodos()
+  }
 }
 
 async function handleDeleteSession(sessionId) {
