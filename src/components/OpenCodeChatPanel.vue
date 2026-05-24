@@ -8,15 +8,6 @@
       </slot>
       <div class="header-actions">
         <slot name="header-actions">
-          <div v-if="showPointAdd" class="add-point-wrapper">
-            <button class="icon-btn" :class="{ active: pointAddMode }" @click="$emit('toggle-point-add')" :title="pointAddMode ? '关闭标注模式' : '开启标注模式'">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" :stroke="pointAddMode ? '#fff' : 'currentColor'" stroke-width="2">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                <circle cx="12" cy="9" r="2.5"/>
-              </svg>
-            </button>
-            <span v-if="userPointsCount > 0" class="point-badge">{{ userPointsCount }}</span>
-          </div>
           <button v-if="showSessionHistory" class="icon-btn new-session-btn" @click="toggleSessionList" title="历史会话">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 8v4l3 3"/>
@@ -127,15 +118,10 @@ const props = defineProps({
   showSessionHistory: { type: Boolean, default: true },
   defaultAgent: { type: String, default: '' },
   defaultModel: { type: String, default: '' },
-  showPointAdd: { type: Boolean, default: false },
-  pointAddMode: { type: Boolean, default: false },
-  userPointsCount: { type: Number, default: 0 },
 })
 
 const emit = defineEmits([
-  'toggle-point-add',
   'update:panelWidth',
-  'update:pointAddMode',
   'new-session',
 ])
 
@@ -380,8 +366,6 @@ defineExpose({
   --icon-active-from: #4f46e5;
   --icon-active-to: #6366f1;
   --icon-active-shadow: rgba(79, 70, 229, 0.35);
-  --badge-bg: #ef4444;
-  --badge-color: #fff;
   --msg-bg: #f9fafb;
   --scrollbar-thumb: rgba(0, 0, 0, 0.12);
   --scrollbar-track: transparent;
@@ -435,11 +419,7 @@ defineExpose({
   align-items: center;
   gap: 6px;
 }
-.add-point-wrapper {
-  position: relative;
-  display: inline-flex;
-}
-.icon-btn {
+.new-session-btn {
   width: 32px; height: 32px;
   border-radius: 8px;
   border: none;
@@ -475,22 +455,6 @@ defineExpose({
 .new-session-btn:hover {
   background: var(--icon-btn-hover-bg) !important;
 }
-.point-badge {
-  position: absolute;
-  top: -4px; right: -4px;
-  min-width: 16px; height: 16px;
-  padding: 0 4px;
-  border-radius: 8px;
-  background: var(--badge-bg);
-  color: var(--badge-color);
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 16px;
-  text-align: center;
-  pointer-events: none;
-  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.35);
-}
-
 .chat-messages {
   flex: 1;
   overflow-y: auto;
