@@ -109,6 +109,19 @@ defineProps({
   overflow-x: auto;
   margin: 10px 0;
 }
+.md-content :deep(pre)::-webkit-scrollbar {
+  height: 4px;
+}
+.md-content :deep(pre)::-webkit-scrollbar-track {
+  background: transparent;
+}
+.md-content :deep(pre)::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+.md-content :deep(pre)::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
 .md-content :deep(pre code) {
   background: none;
   padding: 0;

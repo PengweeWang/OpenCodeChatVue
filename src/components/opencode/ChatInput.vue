@@ -1,21 +1,25 @@
 <template>
   <div class="chat-input-area">
-    <div class="input-row">
-      <div class="editor-wrapper">
-        <div
-          ref="textareaRef"
-          class="chat-textarea"
-          contenteditable="true"
-          :class="{ disabled: sessionBusy }"
-          role="textbox"
-          aria-multiline="true"
-          :aria-label="placeholder"
-          @input="handleInput"
-          @keydown.enter.exact.prevent="$emit('send')"
-          @paste="handlePaste"
-        ></div>
-        <div v-if="!inputText.length" class="placeholder-text">{{ placeholder }}</div>
-        <div class="editor-actions">
+    <div class="editor-wrapper">
+      <div
+        ref="textareaRef"
+        class="chat-textarea"
+        contenteditable="true"
+        :class="{ disabled: sessionBusy }"
+        role="textbox"
+        aria-multiline="true"
+        :aria-label="placeholder"
+        @input="handleInput"
+        @keydown.enter.exact.prevent="$emit('send')"
+        @paste="handlePaste"
+      ></div>
+      <div v-if="!inputText.length" class="placeholder-text">{{ placeholder }}</div>
+      <div class="input-toolbar">
+        <div class="toolbar-left">
+          <slot name="toolbar"></slot>
+        </div>
+        <div class="toolbar-right">
+          <slot name="toolbar-right"></slot>
           <button v-if="!sessionBusy" class="send-btn" @click="$emit('send')" :disabled="!inputText.trim()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 5v14M5 12l7 7 7-7"/>
@@ -33,7 +37,7 @@
       <div v-if="agents.length > 1" class="selector-trigger" @click="agentOpen = !agentOpen" @blur="agentOpen = false" tabindex="0">
         <span class="selector-label truncate">{{ selectedAgentLabel || '选择智能体' }}</span>
         <svg class="selector-chevron" :class="{ open: agentOpen }" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        <div v-if="agentOpen" class="selector-dropdown">
+        <div v-if="agentOpen" class="selector-dropdown agent-dropdown">
           <div
             v-for="a in agents" :key="a.value"
             class="selector-option"
@@ -64,7 +68,7 @@
         </svg>
         <span class="selector-label">{{ thinkingEffortLabel }}</span>
         <svg class="selector-chevron" :class="{ open: thinkingOpen }" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        <div v-if="thinkingOpen" class="selector-dropdown">
+        <div v-if="thinkingOpen" class="selector-dropdown thinking-dropdown">
           <div
             v-for="v in thinkingEffortVariants" :key="v"
             class="selector-option"
@@ -151,41 +155,39 @@ defineExpose({ textareaRef, clear })
   flex-shrink: 0;
   user-select: none;
 }
-.input-row {
-  display: flex;
-  align-items: flex-end;
-}
 .editor-wrapper {
   position: relative;
-  flex: 1;
-  display: flex;
-}
-.chat-textarea {
-  flex: 1;
+  width: 100%;
   border: 1.5px solid #e5e7eb;
   border-radius: 14px;
-  user-select: text;
-  padding: 10px 38px 10px 16px;
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  min-height: 40px;
-  line-height: 1.5;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   background: #f9fafb;
-  white-space: pre-wrap;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   overflow: hidden;
-  word-break: break-word;
 }
-.chat-textarea:focus {
+.editor-wrapper:focus-within {
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
   background: #fff;
 }
+.chat-textarea {
+  width: 100%;
+  border: none;
+  border-radius: 0;
+  user-select: text;
+  padding: 10px 16px 4px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  min-height: 36px;
+  line-height: 1.5;
+  background: transparent;
+  white-space: pre-wrap;
+  overflow: hidden;
+  word-break: break-word;
+  box-sizing: border-box;
+}
 .chat-textarea.disabled {
-  background: #f3f4f6;
   color: #9ca3af;
-  border-color: #e5e7eb;
   pointer-events: none;
 }
 .chat-textarea:empty:before {
@@ -197,7 +199,7 @@ defineExpose({ textareaRef, clear })
   position: absolute;
   top: 10px;
   left: 16px;
-  right: 38px;
+  right: 16px;
   font-size: 13px;
   color: #bbb;
   pointer-events: none;
@@ -205,16 +207,38 @@ defineExpose({ textareaRef, clear })
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.editor-actions {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
+.input-toolbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  gap: 8px;
+  min-height: 34px;
+}
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+}
+.toolbar-left::-webkit-scrollbar {
+  height: 3px;
+}
+.toolbar-left::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 .send-btn, .stop-btn {
-  width: 30px; height: 30px;
-  border-radius: 10px;
+  width: 28px; height: 28px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
   display: inline-flex;
@@ -323,6 +347,25 @@ defineExpose({ textareaRef, clear })
   z-index: 100;
   padding: 6px;
   animation: dropdownIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.agent-dropdown {
+  min-width: max-content;
+}
+.thinking-dropdown {
+  min-width: 55px;
+}
+.selector-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+.selector-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+.selector-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 2px;
+}
+.selector-dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
 }
 @keyframes dropdownIn {
   from { opacity: 0; transform: translateY(4px); }

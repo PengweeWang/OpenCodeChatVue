@@ -17,6 +17,12 @@
             </button>
             <span v-if="userPointsCount > 0" class="point-badge">{{ userPointsCount }}</span>
           </div>
+          <button v-if="showSessionHistory" class="icon-btn new-session-btn" @click="toggleSessionList" title="历史会话">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 8v4l3 3"/>
+              <circle cx="12" cy="12" r="9"/>
+            </svg>
+          </button>
           <button v-if="showNewSession" class="icon-btn new-session-btn" @click="handleNewSession" title="新建会话">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -83,6 +89,16 @@
       @select-thinking-effort="selectThinkingEffort"
     />
 
+    <SessionList
+      v-if="showSessionList"
+      :sessions="sessionListData"
+      :currentSessionId="currentSessionId"
+      :loading="sessionListLoading"
+      @close="showSessionList = false"
+      @switch="handleSwitchSession"
+      @delete="handleDeleteSession"
+    />
+
     <div ref="bottomAnchorRef" class="scroll-anchor"></div>
   </div>
 </template>
@@ -98,6 +114,7 @@ import ToolChain from './opencode/ToolChain.vue'
 import PermissionDock from './opencode/PermissionDock.vue'
 import QuestionDock from './opencode/QuestionDock.vue'
 import ChatInput from './opencode/ChatInput.vue'
+import SessionList from './opencode/SessionList.vue'
 
 const props = defineProps({
   title: { type: String, default: 'AI Chat' },
@@ -107,6 +124,9 @@ const props = defineProps({
   placeholder: { type: String, default: '请输入您的问题...' },
   showModelSelect: { type: Boolean, default: true },
   showNewSession: { type: Boolean, default: true },
+  showSessionHistory: { type: Boolean, default: true },
+  defaultAgent: { type: String, default: '' },
+  defaultModel: { type: String, default: '' },
   showPointAdd: { type: Boolean, default: false },
   pointAddMode: { type: Boolean, default: false },
   userPointsCount: { type: Number, default: 0 },
@@ -128,15 +148,19 @@ const {
   agents,
   pendingQuestion,
   pendingPermission,
+  currentSessionId,
   handleSend: apiSend,
   handleAbort: apiAbort,
   handleNewSession: apiNewSession,
   answerQuestion,
   cancelQuestion: apiCancelQuestion,
   respondPermission,
+  fetchSessionList,
+  switchSession: apiSwitchSession,
+  deleteSession: apiDeleteSession,
   init,
   cleanup,
-} = useOpenCodeChat(props.serverUrl)
+} = useOpenCodeChat(props.serverUrl, { defaultAgent: props.defaultAgent, defaultModel: props.defaultModel })
 
 const messagesRef = ref(null)
 const bottomAnchorRef = ref(null)
@@ -149,6 +173,9 @@ const freeformAnswer = ref('')
 const currentQuestionTab = ref(0)
 const showCustomInput = ref(false)
 const permissionResponding = ref(false)
+const showSessionList = ref(false)
+const sessionListData = ref([])
+const sessionListLoading = ref(false)
 
 watch(showCustomInput, (v) => {
   if (v) {
@@ -254,6 +281,32 @@ function selectModel(value) {
 
 function selectThinkingEffort(value) {
   thinkingEffort.value = value
+}
+
+async function toggleSessionList() {
+  if (showSessionList.value) {
+    showSessionList.value = false
+    return
+  }
+  sessionListLoading.value = true
+  showSessionList.value = true
+  sessionListData.value = await fetchSessionList()
+  sessionListLoading.value = false
+}
+
+async function handleSwitchSession(sessionId) {
+  const ok = await apiSwitchSession(sessionId)
+  if (ok) showSessionList.value = false
+}
+
+async function handleDeleteSession(sessionId) {
+  const ok = await apiDeleteSession(sessionId)
+  if (ok) {
+    sessionListData.value = sessionListData.value.filter(s => s.id !== sessionId)
+    if (currentSessionId.value === sessionId) {
+      await handleNewSession()
+    }
+  }
 }
 
 function handleSend() {

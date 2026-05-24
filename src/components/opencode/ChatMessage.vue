@@ -33,7 +33,7 @@
         <div v-else class="md-content" v-html="renderMarkdown(msg.content)" :data-typing="msg.typing || undefined"></div>
       </template>
       <template v-else>
-        <div class="md-content" v-html="renderMarkdown(msg.content)"></div>
+        <div class="user-text">{{ msg.content }}</div>
       </template>
     </div>
   </div>
@@ -148,6 +148,19 @@ defineProps({
   overflow-x: auto;
   margin: 10px 0;
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.md-content :deep(pre)::-webkit-scrollbar {
+  height: 4px;
+}
+.md-content :deep(pre)::-webkit-scrollbar-track {
+  background: transparent;
+}
+.md-content :deep(pre)::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+.md-content :deep(pre)::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
 }
 .md-content :deep(pre code) {
   background: none;

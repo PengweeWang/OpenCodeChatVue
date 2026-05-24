@@ -13,6 +13,7 @@
         :minPanelWidth="350"
         title="OpenCode Chat"
         serverUrl="http://127.0.0.1:4096"
+        :show-session-history="false"
       />
       <div class="content-placeholder">
         <div class="placeholder-inner">
