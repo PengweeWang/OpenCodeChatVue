@@ -20,6 +20,7 @@ export function useOpenCodeChat(serverUrl = 'http://127.0.0.1:4096', options = {
   const commandSourceMap = {}
   const subSessionIds = new Set()
   const subAgentNames = {}
+  const nestedSessionParents = {}
   const partTypeByID = {}
   const streamingPartIds = new Set()
   let currentUserMessageId = null
@@ -28,9 +29,20 @@ export function useOpenCodeChat(serverUrl = 'http://127.0.0.1:4096', options = {
   const staleDeltas = new Set()
   const coalescedKeys = new Map()
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
-}
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
+  }
+
+  function hasActiveNestedSession(sessionId) {
+    for (const [child, parent] of Object.entries(nestedSessionParents)) {
+      if (parent === sessionId) {
+        const parentTool = messages.value.find(m => m.type === 'tool_call' && m.subSessionId === child)
+        if (parentTool && parentTool.subStatus !== 'completed') return true
+        if (hasActiveNestedSession(child)) return true
+      }
+    }
+    return false
+  }
 
 function countLabel(toolCount, skillCount) {
   const parts = []
@@ -254,7 +266,8 @@ function countLabel(toolCount, skillCount) {
         // If all tools are done and text has arrived, mark as completed
         if (parent._subTools?.length) {
           const allDone = parent._subTools.every(t => t.status === 'completed' || t.status === 'failed')
-          if (allDone && parent.subStatus !== 'completed') {
+          const noActiveNested = !hasActiveNestedSession(part.sessionID)
+          if (allDone && noActiveNested && parent.subStatus !== 'completed') {
             parent.subStatus = 'completed'
             parent._subStatusText = `已完成 (${countLabel(parent._toolCount || 0, parent._skillCount || 0)})`
           }
@@ -305,10 +318,9 @@ function countLabel(toolCount, skillCount) {
             if (status === 'completed' || status === 'failed') {
               const allTools = parent._subTools || []
               const allDone = allTools.every(t => t.status === 'completed' || t.status === 'failed')
-              if (allDone) {
+              const noActiveNested = !hasActiveNestedSession(part.sessionID)
+              if (allDone && noActiveNested) {
                 const countInfo = countLabel(parent._toolCount || 0, parent._skillCount || 0)
-                // Only mark completed if text has already arrived (streaming done)
-                // Otherwise, wait for text part update to set completed
                 if (parent._subText) {
                   parent.subStatus = 'completed'
                   parent._subStatusText = `已完成 (${countInfo})`
@@ -321,10 +333,11 @@ function countLabel(toolCount, skillCount) {
         } else {
           const resolvedAgentName = agentName || (subSessionId ? subAgentNames[subSessionId] : undefined)
           addToolCallMsg(part.id, toolName, status, input, output, subSessionId, resolvedAgentName)
-          if (subSessionId) {
-            subSessionIds.add(subSessionId)
-            if (agentName) subAgentNames[subSessionId] = agentName
-          }
+            if (subSessionId) {
+              subSessionIds.add(subSessionId)
+              if (agentName) subAgentNames[subSessionId] = agentName
+              nestedSessionParents[subSessionId] = part.sessionID
+            }
         }
         break
       }
@@ -570,6 +583,8 @@ function countLabel(toolCount, skillCount) {
     sessionBusy.value = false
     streamingPartIds.clear()
     subSessionIds.clear()
+    subAgentNames.length = 0
+    Object.keys(nestedSessionParents).forEach(k => delete nestedSessionParents[k])
     await createSession()
     addSystemMessage('已创建新会话')
   }
@@ -579,7 +594,7 @@ function countLabel(toolCount, skillCount) {
       const r = await fetch(`${serverUrl}/session`)
       if (!r.ok) return []
       const data = await r.json()
-      return data || []
+      return (data || []).filter(s => !s.parentID)
     } catch {
       return []
     }
@@ -594,6 +609,7 @@ function countLabel(toolCount, skillCount) {
       sessionBusy.value = false
       streamingPartIds.clear()
       subSessionIds.clear()
+      Object.keys(nestedSessionParents).forEach(k => delete nestedSessionParents[k])
       currentUserMessageId = null
       currentSessionId.value = sessionId
 
